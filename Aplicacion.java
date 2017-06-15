@@ -35,7 +35,7 @@ import java.util.ArrayList;
 /**
  * franciscoJavier
  */
-public class Aplicacion_0 extends Application 
+public class Aplicacion extends Application 
 {
     private Circle cicle;
     private Rectangle rectangulo;
