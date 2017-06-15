@@ -51,6 +51,16 @@ public class Aplicacion_0 extends Application
     private int velocidadEnBarraY;
     private  Pelota pelota;
 
+    private int contDeTiempo = 1;
+    //----- EL CRONOMETRO DEL JUEGO ES DESCENDENTE, EMPIEZA EN 'tiempoEnSegundos'.
+    private int tiempoEnSegundos = 966;
+    private int numeroBolaEnescena = 0;
+    private int eliminados = 0;
+
+    // MECANISMO DE CORRECCIÓN,( para que aparezca un arbol cada vez que desaparece una bolita.)
+    private int corrector_1 = -1;
+    private int corrector_0 = -1;
+
     Color COLOR_ESCENA = Color.WHITE;
     private boolean sonidoDeCapturado = false;
     private boolean seCreaUnArbol = false;
@@ -58,28 +68,19 @@ public class Aplicacion_0 extends Application
 
     int LARGO_ESCENA = 800;
     int ALTO_ESCENA = 650;
-
     int LARGO_CAZADOR = 60;
     int ALTO_CAZADOR = 60;
+    int LARGO_BOTON = 80;
+    int ALTO_BOTON = 5;
     int POSICION_X_CAZADOR = LARGO_ESCENA /4;
     int POSICION_Y_CAZADOR = ALTO_ESCENA /5;
 
-    int NUM_DE_BOLAS = 11;
-    int NUM_DE_ARBOLES = 22;
+    int NUM_DE_BOLAS = 20;
+    int NUM_DE_ARBOLES = 20;
 
     int RADIO = 15;
 
-    int LARGO_BOTON = 80;
-    int ALTO_BOTON = 5;
-
-    private int contDeTiempo = 1;
-    //----- EL CRONOMETRO DEL JUEGO ES DESCENDENTE, EMPIEZA EN 'tiempoEnSegundos'.
-    private int tiempoEnSegundos = 966;
-    private int numeroBolaEnescena = 0;
-    private int eliminados = 0;
-
     public static void main(String[] args){
-
         //Esto se utiliza para ejecutar la aplicación 
         //es como el new Contructor()
         launch(args);
@@ -92,33 +93,44 @@ public class Aplicacion_0 extends Application
         Scene escena = new Scene(root, LARGO_ESCENA, ALTO_ESCENA, COLOR_ESCENA);//Se crea la escena con el contenedor que contiene los objetos.
         ventana.setScene(escena);//pasamos al parámetro ventana el objeto escena.
 
-        //SE CREA EL POLIGONO CAZADOR DE BOLITAS.
+        ////////////////////////////////////////////////////////////////////////////////***********************************      SE CREA EL POLIGONO CAZADOR DE BOLITAS.
+
         Poligono cazador = new Poligono(POSICION_X_CAZADOR, POSICION_Y_CAZADOR, LARGO_CAZADOR, ALTO_CAZADOR, COLOR_ESCENA);
         root.getChildren().add(cazador);
 
-        //////////////////////////////////////////////////SE CREA UNA COLECCioN DE POLIGONOS ARBOL.
+        /////////////////////////////////////////////////////////////////////////////// ***************************************        COLECCioN DE POLIGONOS ARBOL.
+
         ArrayList<Poligono> arboles = new ArrayList<>();
         int coorDeX = LARGO_ESCENA /9 ;//------variable para determinar la coordenada de X.
-        int acumCoorDeX = 0; 
+        int aux = coorDeX;
+        int aux2 = coorDeX;
+        int acumCoorDeX = 0;
+        int coorDeY = (ALTO_ESCENA - 150);
         for(int i = 0; i < NUM_DE_ARBOLES ; i ++){
-            int coorDeY = (ALTO_ESCENA - 150);
-            if(i >= 18){
-                coorDeY = ALTO_ESCENA - 450;
-                acumCoorDeX = 0;
-            }
-            else if(i >= 9 && i < 18){
-                coorDeY = ALTO_ESCENA - 300;
-                acumCoorDeX = 0;
-            }
-            
+
+            //Poligono arbol = new Poligono(200, 200, 200, 450 , Color.BLACK);
             Poligono arbol = new Poligono(acumCoorDeX, coorDeY, 10, 100, Color.BLACK);
-            acumCoorDeX += coorDeX;//----------acumula la medida de las coordenadas en X.
+
             arbol.setVisible(false);
             root.getChildren().add(arbol);
             arboles.add(arbol);
-        }
 
-        ///////////////////////////////////////////////// SE CREA UNA COLECCioN DE PELOTAS.
+            if(i < 9 ){
+                acumCoorDeX += coorDeX;//----------acumula la medida de las coordenadas en X.
+            }
+            else if(i >= 18){
+                coorDeY = ALTO_ESCENA - 450;
+                acumCoorDeX += aux2 ;
+                aux2 += coorDeX;
+            }
+            else if(i > 9 && i < 18){    
+                coorDeY = ALTO_ESCENA - 300;
+                acumCoorDeX = aux ;
+                aux += coorDeX;
+            }
+
+        }
+        /////////////////////////////////////////////////////////////////////////////////////********* COLECCioN DE PELOTAS.
         ArrayList<Pelota> pelotas = new ArrayList<>();
         pelota =  new  Pelota( LARGO_ESCENA/2,ALTO_ESCENA/2, RADIO);
         for(int i = 0; i < NUM_DE_BOLAS ; i ++){
@@ -131,18 +143,20 @@ public class Aplicacion_0 extends Application
             root.getChildren().add(pelotas.get(i));
         }
 
-        //////////////////////////////////////SE CREA UN  CRONÓMETRO
+        /////////////////////////////////////////////////////////////////////////////////////////SE CREA UN  CRONÓMETRO
 
         Label tiempoPasado = new Label("0");  //-------------objeto Label para pasar como parametro.
         Objetos_De_Apollo miLabelCronometro = new Objetos_De_Apollo();//-Objetos_De_Apollo, hecha en este proyecto.
         miLabelCronometro.crearUnLabel(tiempoPasado, root,12, 25);//-------muestra cronometro  de descuento.
 
-        //SE CREA EL  CONTADOR DEL Nº DE  BOLITAS QUE SE VAN ELIMINANDO,       
+        ////////////////////////////////////////////////////SE CREA EL  CONTADOR DEL Nº DE  BOLITAS QUE SE VAN ELIMINANDO, ////     
+
         Label bolitasEliminadas = new Label();  //-------------objeto Label para pasar como parametro.
         Objetos_De_Apollo miLabelContador = new Objetos_De_Apollo();//-Objetos_De_Apollo, hecha en este proyecto.
         miLabelContador.crearUnLabel(bolitasEliminadas, root, 12, 60);//-------muestra el nº de bolitas eliminadas.
 
-        ////////////////////////////////////////// SE CREA UN BOTÓN
+        ////////////////////////////////////////////////////////////////////////////////// SE CREA UN BOTÓN
+
         Button boton = new Button("Stop / Move");
         boton.setDefaultButton(true);
         boton.setLayoutX(15);
@@ -154,8 +168,9 @@ public class Aplicacion_0 extends Application
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
         //define un valor de movimiento en los ejes x / y.
-        KeyFrame kf = new KeyFrame(Duration.seconds(.004), new EventHandler<ActionEvent>() {
-                    ////// ---------VARIABLE PARA PERMITIR EL RECUENTO DE LAS BARRITAS QUE SE VAN ELIMINADO.
+        KeyFrame kf = new KeyFrame(Duration.seconds(.005), new EventHandler<ActionEvent>() {
+
+                    ///////////////// ---------VARIABLE PARA PERMITIR EL RECUENTO DE LAS BARRITAS QUE SE VAN ELIMINADO.
                     int val = root.getChildren().size();
                     boolean sonidoDeCapturados = false;
                     public void handle(ActionEvent event) {
@@ -164,17 +179,23 @@ public class Aplicacion_0 extends Application
                             pelotas.get(i).mover(LARGO_ESCENA, ALTO_ESCENA);                           
                         }
 
+                        ///////////////////////////////////////////////// cada vez que se elimina una bolita aparece un arbol.
+
+                        if(eliminados > corrector_0){
+                            corrector_1 ++;
+                            corrector_0 = eliminados;
+                        }
                         eliminados = ( val - (root.getChildren().size()) );///---- nº de bolitas eliminadas.
                         bolitasEliminadas.setText("Eliminadas  " +eliminados);
 
-                        // cada vez que se elimina una bolita aparece un arbol.
-                        if(eliminados < 18){
-                            arboles.get(eliminados).setVisible(true);
+                        if(corrector_1 < NUM_DE_ARBOLES ){
+
+                            arboles.get(corrector_1).setVisible(true);
                             arboles.get(0).setFill(COLOR_ESCENA);
                             arboles.get(0).setStroke(COLOR_ESCENA);
                         }
 
-                        // Actualizamos la etiqueta del tiempo
+                        ///////////////////////////////////////////////// Actualizamos la etiqueta del tiempo
                         int minutos = tiempoEnSegundos / 60;
                         int segundos = tiempoEnSegundos % 60;
                         tiempoPasado.setText(minutos + ":" + segundos);  
@@ -186,7 +207,8 @@ public class Aplicacion_0 extends Application
                             miLabelCronometro.crearUnLabel(finDelJuego, root,(LARGO_ESCENA /2) -100, ALTO_ESCENA /2);//-------muestra cronometro  de descuento.
                             finDelJuego.setText(" -- GANE  OVER -- ");
                         }
-                        //PARA QUE SE MUEVA EL CUADRADO CAZADOR .
+
+                        ////////////////////////////////////////////////////PARA QUE SE MUEVA EL CUADRADO CAZADOR .
                         cazador.mover(LARGO_ESCENA, ALTO_ESCENA);
 
                         for(Pelota pelota: pelotas){
@@ -198,13 +220,61 @@ public class Aplicacion_0 extends Application
                             }
                         }
 
+                        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                        //PARA QUE REBOTEN LAS BOLAS AL COLISIONAR CON LAS BARRITAS.
+                        //for(int i = 0; i < pelotas.size(); i ++ ){
+                        for(int a = 0; a < arboles.size(); a ++ ){
+
+                            double MinX_Cazador =  cazador.getBoundsInParent().getMinX() -0.5;
+                            double MinY_Cazador = cazador.getBoundsInParent().getMinY() ;
+                            double MaxX_Cazador = cazador.getBoundsInParent().getMaxX() -0.5;
+                            double MaxY_Cazador = cazador.getBoundsInParent().getMaxY() ;
+
+                            double MinX_Arbol =  arboles.get(a).getBoundsInParent().getMinX();
+                            double MinY_Arbol = arboles.get(a).getBoundsInParent().getMinY();
+                            double MaxX_Arbol = arboles.get(a).getBoundsInParent().getMaxX();                                
+                            double MaxY_Arbol =  arboles.get(a).getBoundsInParent().getMaxY();
+
+                            //                             if( MaxX_Cazador >= MinX_Arbol && (MinY_Cazador ) > MinY_Arbol &&
+                            //                             (MaxY_Cazador ) <= MaxY_Arbol)  {                                    
+                            //                                 cazador.cambiarDireccionIzquierda();
+                            //                             }
+
+                            //                             if( MinX_Cazador  >= MaxX_Arbol && (MinY_Cazador) > MaxY_Arbol &&
+                            //                             (MaxY_Cazador) > MinY_Arbol)  {                                    
+                            //                                 cazador.cambiarDireccionDerecha(LARGO_ESCENA);
+                            //                             }
+                            //                             
+                            //                             else if( MinY_Cazador == MaxY_Arbol && (MinX_Cazador) < MaxX_Arbol &&
+                            //                             (MaxX_Cazador ) > MinX_Arbol)  {                                    
+                            //                                 cazador.cambiarDireccionAbajo();
+                            //                             }
+                            //                             //                             else 
+                            //                             else 
+                            if( MaxY_Cazador == MinY_Arbol &&  MaxX_Cazador  > MinX_Arbol &&
+                            (MinX_Cazador  < MaxX_Arbol ) ) {    
+                                Random aleatorio = new Random();
+                                Color color = new Color(aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble(), aleatorio.nextDouble());
+                                if(color == COLOR_ESCENA ){
+                                    color = Color.GREEN;
+                                }
+                                else if(color == Color.BLACK){
+                                     color = Color.GREEN;
+                                }
+                                cazador.cambiarDireccionArriba(ALTO_ESCENA);
+                                arboles.get(a).setFill(color);
+                            }
+
+                        }
+                        // }
                     }
                 });
 
         timeline.getKeyFrames().add(kf);
         timeline.play();
         ventana.show();
-        //////////////////////  PARA ACTIVAR Y DESACTIVAR EL BOTÓN CUANDO ESTE ACTIVADO.
+        ////////////////////////////////////////////////////////////  PARA ACTIVAR Y DESACTIVAR EL BOTÓN CUANDO ESTE ACTIVADO.
         boton.setOnAction(event2 -> {
                 if (timeline.getStatus() == Status.PAUSED){
                     timeline.play();
@@ -214,7 +284,7 @@ public class Aplicacion_0 extends Application
                 } 
             });
 
-        ////////////////////  para controlar AL CAZADOR con los botones de izquierda/derecha.
+        /////////////////////////////////////////////////////////  DA DIRECCION  AL CAZADOR CON LOS BOTONES  de izquierda/derecha.
         root.setOnKeyPressed(event2 ->{
                 if(event2.getCode() == KeyCode.RIGHT){
                     cazador.cambiarDireccionDerecha(LARGO_ESCENA);
@@ -231,9 +301,11 @@ public class Aplicacion_0 extends Application
                 }
                 else if(event2.getCode() == KeyCode.ENTER){
 
-                    for(Pelota pelota: pelotas){
-                        if( cazador.capturadaPelota(pelota) == true ){
-                            root.getChildren().remove(pelota);
+                    for(int i = 0; i < pelotas.size(); i ++){
+                        //for(Pelota pelota: pelotas){
+                        if( cazador.capturadaPelota(pelotas.get(i)) == true ){
+                            root.getChildren().remove(pelotas.get(i));
+                            //root.getChildren().remove(pelota);
 
                         }
                     }
