@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * @author franciscoJavier
  */
-public class Cazador extends Rectangle{
+public class Poligono extends Rectangle{
 
     private double x;
     private double y;
@@ -19,9 +19,9 @@ public class Cazador extends Rectangle{
     //ladrillos que van siendo eliminados.
     private int eliminados;
 
-    public Cazador(double x, double y, double width, double height, Color color) {
+    public Poligono(double x, double y, double width, double height, Color color) {
         super();
-
+        this.setTranslateX(x);
         this.setTranslateY(y);
         this.setWidth(width);
         this.setHeight(height);
@@ -34,7 +34,7 @@ public class Cazador extends Rectangle{
 
     }
 
-    public Cazador() {
+    public Poligono() {
         Random ale = new Random();
         Color colorLadrillo = new Color(ale.nextFloat(), ale.nextFloat(), ale.nextFloat(), ale.nextFloat());
         this.setTranslateX(122);
@@ -45,10 +45,12 @@ public class Cazador extends Rectangle{
         this.setStroke(Color.BLACK);
     }
 
+    /**
+     * Limita el movimiento del cuadrado CAZADOR a los limites de la escena.
+     */
     public void mover(int largoEscena, int altoEscena){
         setTranslateX(getTranslateX() + velocidadX);
         setTranslateY(getTranslateY() + velocidadY);
-
         /////para que la barra no se salga de los límites de la escena.
         if(getBoundsInParent().getMinX() <= 0 || 
         getBoundsInParent().getMaxX() >= (largoEscena) ){
@@ -72,7 +74,13 @@ public class Cazador extends Rectangle{
             velocidadX =  -1;
         }
     }
-
+    ////////////////////
+    public void izquier(){
+        if(getBoundsInParent().getMinY() != 0 ){
+            velocidadX =  -1;
+        }
+    }
+    //////////////
     public void cambiarDireccionArriba(int altoEscena){
         if(getBoundsInParent().getMaxY() != altoEscena){
             velocidadY = -1;
@@ -85,26 +93,28 @@ public class Cazador extends Rectangle{
         }
     }
 
+    /**
+     * comprueba si las coordenadas de la bola estan dentro deL limite de las coordenadas del cuadrado CAZADOR.
+     */
     public boolean capturadaPelota(Pelota pelota ){
-        Shape c = Shape.intersect(this, pelota);
+       // Shape c = Shape.intersect(this, pelota);
         boolean capturada = false;
         double cap_MaxX = getBoundsInParent().getMaxX();
         double cap_MinX = getBoundsInParent().getMinX();
-        double cac_MinY = getBoundsInParent().getMinY();
-        double cac_MaxY = getBoundsInParent().getMaxY();
+        double cap_MinY = getBoundsInParent().getMinY();
+        double cap_MaxY = getBoundsInParent().getMaxY();
 
         double pelota_MaxX = pelota.getBoundsInParent().getMaxX();
         double pelota_MinX = pelota.getBoundsInParent().getMinX();
         double pelota_MinY = pelota.getBoundsInParent().getMinY(); 
         double pelota_MaxY = pelota.getBoundsInParent().getMaxY();
 
-        if(c.getBoundsInParent().getWidth() != -1){
-            if( pelota_MaxX <= cap_MaxX && pelota_MinX >= cap_MinX &&
-            pelota_MinY >= cac_MinY && pelota_MaxY <=  cac_MaxY){
-
+       // if(c.getBoundsInParent().getWidth() != -1){
+            if( pelota_MaxX <=  cap_MaxX && pelota_MinX >=  cap_MinX &&
+            pelota_MinY >=  cap_MinY && pelota_MaxY <=   cap_MaxY){
                 capturada = true;
             }
-        }
+       // }
         return capturada;
     }
 
