@@ -13,15 +13,16 @@ public class Pelota extends Circle{
     private int velocidadEnY;
 
     private Color color;
-
+    private Color bordePelota;
     public Pelota(double centerX, double centerY, double radius){
         super(centerX, centerY, radius);
         Random ale = new Random();
         Color colorPelota = new Color(ale.nextFloat(), ale.nextFloat(), ale.nextFloat(), ale.nextFloat());
+        color = colorPelota;
         this.setCenterX(centerX);
         this.setCenterY( centerY);
         this.setRadius(radius);
-        this.setFill(colorPelota);
+        this.setFill(color);
         this.setStroke(Color.RED);
         velocidadEnX = 1;
         velocidadEnY = 1;
@@ -40,25 +41,19 @@ public class Pelota extends Circle{
         velocidadEnY = 1;
     }
 
-    public void mover(int num){
+    public void mover(int largoEscena, int altoEscena){
         setTranslateX(getTranslateX() + velocidadEnX);
         setTranslateY(getTranslateY() + velocidadEnY);
-        if(getBoundsInParent().getMaxY() <= num  ){
-            velocidadEnX = +6;
-            velocidadEnY = +6;
+        if(getBoundsInParent().getMinX() <= 0 || 
+       getBoundsInParent().getMaxX() >= (largoEscena) ){
+            velocidadEnX = -velocidadEnX;
+
         }
-        //         else if(getBoundsInParent().getMinY() <=  0)        {
-        //             velocidadEnY = -velocidadEnY;
-        //         }
-        //         else if(getBoundsInParent().getMaxY() >= minimoYRaqueta && 
-        //                         (getBoundsInParent().getMaxX() - radius) <= maximoXRaqueta &&
-        //                           getBoundsInParent().getMinX() >= minimoXRaqueta ){
-        //             velocidadEnY = -velocidadEnY;
-        //         }
-        //         else if(getBoundsInParent().getMaxY() >= altoEscena){
-        //             velocidadEnY = 0;
-        //             velocidadEnX = 0;
-        //         }
+        if(getBoundsInParent().getMinY() <=  0 || 
+        getBoundsInParent().getMaxY() >= (altoEscena) ){
+            velocidadEnY = -velocidadEnY;
+        }
+
     }
 
     /**
@@ -81,5 +76,13 @@ public class Pelota extends Circle{
 
     public void setVelocidad_Y_APelota(int velocidad){
         velocidadEnY = velocidad;
+    }
+    
+    public void ponerColorNegro(){
+        color = Color.BLACK;
+    }
+    
+    public void setColor(Color color7){
+        color = color7;
     }
 }
